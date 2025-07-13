@@ -4,14 +4,28 @@ import ProductTable from "@/components/productTable";
 import { supabase } from "@/lib/supabaseClient";
 import withAuth from "@/lib/withAuth";
 import { useEffect,useState } from "react";
+import ProductFilters from "@/components/productFilters";
 
 
 
 function HomePage(){
   const [products, setProducts]= useState([]);
   const[loading, setLoading]= useState(true);
-  const[error, setError]= useState('');
+  const[error, setError]= useState("");
+  const [search, setSearch]=useState("");
+  const[category, setCategory]=useState("");
+
+
+  const categories= Array.from(new Set(products.map(p=> p.category).filter(Boolean)));
   
+  const filteredProducts= products.filter(product=> {
+    const matchesSearch= 
+      product.name.toLowerCase().includes(search.toLowerCase()) ||
+      (product.description && product.description.toLowerCase().includes(search.toLowerCase()));
+    const matchesCategory= category === ""||product.category===category;
+    return matchesSearch && matchesCategory;
+  });
+
 
   useEffect(()=> {
     async function fetchProducts(){
@@ -62,8 +76,14 @@ function HomePage(){
       {loading &&<p>Loading...</p>}
       {error && <p style={{color:"red"}}>{error}</p>}
 
+      <ProductFilters
+      categories= {categories}
+      onSearch={setSearch}
+      onCategory= {setCategory}
+      />
+
       <ProductTable
-      products= {products}
+      products= {filteredProducts}
       onProductUpdated= {handleProductUpdated}
       onProductDeleted={handleProductDeleted}
       />
