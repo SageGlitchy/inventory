@@ -31,6 +31,7 @@ export default function ProductForm({ onProductAdded }){
       .insert([
         {
           name: form.name,
+          description: form.description,
           stock: parseInt(form.stock, 10),
           category: form.category,
           price: parseFloat(form.price)
@@ -41,7 +42,7 @@ export default function ProductForm({ onProductAdded }){
       setFormError(error.message);
     }
     else{
-      setForm({name:"", stock:"", category:"", price:""});
+      setForm({name:"",description: "", stock:"", category:"", price:""});
       onProductAdded(data[0]);
     }
     setFormLoading(false);
@@ -56,6 +57,13 @@ export default function ProductForm({ onProductAdded }){
           onChange={handleChange}
         />
 
+        <textarea
+        name= "description"
+        placeholder="Short Description"
+        value={form.description}
+        onChange={handleChange}
+        />
+
         <input
           name="stock"
           type="number"
@@ -64,12 +72,18 @@ export default function ProductForm({ onProductAdded }){
           onChange={handleChange}
         />
 
-        <input
-          name="category"
-          placeholder="Category"
-          value={form.category}
-          onChange={handleChange}
-        />
+        <select
+        name="category"
+        placeholder= "Select Category"
+        value={form.category}
+        onChange={handleChange}>
+          <option value="">Select Category</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Fashion">Fashion</option>
+          <option value="Stationary">Stationary</option>
+          <option value="Wellness">Wellness</option>
+          <option value="Home">Home</option>
+        </select>
 
         <input
           name="price"

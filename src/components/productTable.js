@@ -5,6 +5,7 @@ export default function ProductTable({ products, onProductUpdated, onProductDele
     const [editingId, setEditingId]=useState(null);
     const[editForm, setEditForm]= useState({
         name:"",
+        description : "",
         stock:"",
         category:"",
         price:""
@@ -18,7 +19,7 @@ export default function ProductTable({ products, onProductUpdated, onProductDele
         const {error}= await supabase
           .from("products")
           .delete()
-          .eq("id", id)
+          .eq("id", id);
 
         if (error){
           alert(" Could not delete item: " + error.message);
@@ -53,6 +54,7 @@ export default function ProductTable({ products, onProductUpdated, onProductDele
         .from("products")
         .update({
             name: editForm.name,
+            description:editForm.description,
             stock: stockValue,
             category: editForm.category,
             price: priceValue
@@ -77,8 +79,8 @@ export default function ProductTable({ products, onProductUpdated, onProductDele
         <table>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Stock</th>
+            <th>Product Name</th>
+            <th>Quantity</th>
             <th>Category</th>
             <th>Price</th>
             <th>Actions</th>
@@ -97,6 +99,7 @@ export default function ProductTable({ products, onProductUpdated, onProductDele
                     onChange={e=> setEditForm({...editForm, name: e.target.value})} 
                     />
                   </td>
+
                   <td>
                     <input
                     name="stock"
@@ -105,6 +108,7 @@ export default function ProductTable({ products, onProductUpdated, onProductDele
                     onChange={e=> setEditForm ({...editForm, stock : e.target.value})}
                     />
                   </td>
+
                   <td>
                     <input
                       name="category"
@@ -112,6 +116,7 @@ export default function ProductTable({ products, onProductUpdated, onProductDele
                       onChange={e => setEditForm({ ...editForm, category: e.target.value })}
                     />
                   </td>
+
                   <td>
                     <input
                       name="price"
@@ -121,6 +126,7 @@ export default function ProductTable({ products, onProductUpdated, onProductDele
                       onChange={e => setEditForm({ ...editForm, price: e.target.value })}
                     />
                   </td>
+
                   <td>
                     <button
                       onClick={()=> handleUpdate(product.id)}
@@ -136,13 +142,60 @@ export default function ProductTable({ products, onProductUpdated, onProductDele
 
                       {editError && <span style={{color:"red"}}>{editError}</span>}
                   </td>
+
                 </>
               ) : (
                 <>
-                  <td>{product.name}</td>
-                  <td>{product.stock}</td>
-                  <td>{product.category}</td>
+                  <td>
+                    <div style={{fontWeight: "Bold"}}>{product.name}</div>
+                    <div style={{fontSize: "0.95em", color: "#666"}}>{product.description}</div>
+                  </td>
+
+                  <td>
+                    <div style={{fontWeight: "bold"}}>{product.stock}</div>
+                    <div style={{
+                      marginTop: 4,
+                      display: "inline-block",
+                      padding: "2px 10px",
+                      borderRadius:"8px",
+                      fontSize: "0.85em",
+                      fontWeight:500,
+                      backgroundColor:
+                        product.stock===0
+                          ?"#fee2e2"
+                          : product.stock <= 5
+                          ? "#fef9c3"
+                          : "#dcfce7",
+                      color:
+                        product.stock===0
+                          ? "##b91c1c"
+                          : product.stock <= 5
+                          ? "#92400e"
+                          : "#166534"
+                    }}>
+                    {product.stock===0
+                      ?"Out of Stock"
+                      : product.stock <= 5
+                      ? "Low Stock"
+                      : "In Stock"}
+                    </div>
+                  </td>
+                  <td>
+                    <span
+                    style={{
+                      backgroundColor: "e3f0ff",
+                      color: "#2563eb",
+                      borderRadius: "8px",
+                      padding: "2px 10px",
+                      fontSize: "0.95em",
+                      fontWeight: 500
+                    }}>
+                      {product.category}
+                    </span>
+                  </td>
+
                   <td>{product.price}</td>
+
                   <td>
                     <button onClick={()=> {
                       setEditingId(product.id);
@@ -160,7 +213,6 @@ export default function ProductTable({ products, onProductUpdated, onProductDele
                     style= {{marginLeft: "8px", backgroundColor: "#ff4444", color: "white"}}>
                       Delete
                     </button>
-
                   </td>
                 </>
               )}
