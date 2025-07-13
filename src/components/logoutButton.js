@@ -1,5 +1,5 @@
-const { supabase } = require("@/lib/supabaseClient");
-const { useRouter } = require("next/router");
+import { supabase } from "@/lib/supabaseClient";
+import { useRouter } from "next/router";
 
 export default function LogoutButton(){
     const router = useRouter();
