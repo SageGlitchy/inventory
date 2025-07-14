@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import styles from "@/styles/inventory.module.scss";
+import { NotebookText, Trash2 } from "lucide-react";
 
 export default function ProductTable({ products, onProductUpdated, onProductDeleted}){
     const [editingId, setEditingId]=useState(null);
@@ -76,7 +78,15 @@ export default function ProductTable({ products, onProductUpdated, onProductDele
     };
 
     return (
-        <table>
+      <div className={styles.tableContainer}>
+        <table className={styles.table}>
+          <colgroup>
+            <col style={{ width: "28%" }} />
+            <col style={{ width: "14%" }} />
+            <col style={{ width: "13%" }} />
+            <col style={{ width: "18%" }} />
+            <col style={{ width: "12%" }} />
+          </colgroup>
         <thead>
           <tr>
             <th>Product Name</th>
@@ -98,6 +108,14 @@ export default function ProductTable({ products, onProductUpdated, onProductDele
                     value= {editForm.name}
                     onChange={e=> setEditForm({...editForm, name: e.target.value})} 
                     />
+                  </td>
+
+                  <td>
+                    <textarea
+                    name="description"
+                    value={editForm.description}
+                    onChange={e=> setEditForm({...editForm, description: e.target.value})}
+                    style={{width:"100%", minHeight:"2.2em", fontSize:"1em"}}></textarea>
                   </td>
 
                   <td>
@@ -147,79 +165,76 @@ export default function ProductTable({ products, onProductUpdated, onProductDele
               ) : (
                 <>
                   <td>
-                    <div style={{fontWeight: "Bold"}}>{product.name}</div>
-                    <div style={{fontSize: "0.95em", color: "#666"}}>{product.description}</div>
+                    <div className={styles.productName}>{product.name}</div>
+                    <div className={styles.productDescription}>{product.description}</div>
                   </td>
 
                   <td>
                     <div style={{fontWeight: "bold"}}>{product.stock}</div>
-                    <div style={{
-                      marginTop: 4,
-                      display: "inline-block",
-                      padding: "2px 10px",
-                      borderRadius:"8px",
-                      fontSize: "0.85em",
-                      fontWeight:500,
-                      backgroundColor:
-                        product.stock===0
-                          ?"#fee2e2"
-                          : product.stock <= 5
-                          ? "#fef9c3"
-                          : "#dcfce7",
-                      color:
-                        product.stock===0
-                          ? "##b91c1c"
-                          : product.stock <= 5
-                          ? "#92400e"
-                          : "#166534"
-                    }}>
+                    <span className={`${styles.stockBadge} ${
+                      product.stock===0
+                      ?styles.stockOut
+                      :product.stock<=5
+                      ?styles.stockLow
+                      :styles.stockIn
+                    }`}>
                     {product.stock===0
                       ?"Out of Stock"
                       : product.stock <= 5
                       ? "Low Stock"
                       : "In Stock"}
-                    </div>
+                    </span>
                   </td>
+
                   <td>
                     <span
-                    style={{
-                      backgroundColor: "e3f0ff",
-                      color: "#2563eb",
-                      borderRadius: "8px",
-                      padding: "2px 10px",
-                      fontSize: "0.95em",
-                      fontWeight: 500
-                    }}>
+                    className={`${styles.categoryBadge} ${styles['category'+(product.category ||'').replace(/\s/g, '')]}`}
+                    >
                       {product.category}
                     </span>
                   </td>
 
-                  <td>{product.price}</td>
+                  <td>
+                    {Number(product.price).toLocaleString("en-IN",{
+                      style:"currency",
+                      currency:"INR"
+                    })}
+                  </td>
 
                   <td>
-                    <button onClick={()=> {
+                    <button 
+                    className={styles.actionButton}
+                    onClick={()=> {
                       setEditingId(product.id);
                       setEditForm({
                         name: product.name,
+                        description:product.description,
                         stock: product.stock,
                         category: product.category,
                         price: product.price
                       });
                       setEditError("");
-                    }}>Edit</button> 
+                    }}
+                    title="Edit"
+                    >
+                      <NotebookText />
+                    </button> 
 
                     <button
+                    className={`${styles.actionButton} ${styles.deleteButton}`}
                     onClick={()=> handleDelete(product.id)}
-                    style= {{marginLeft: "8px", backgroundColor: "#ff4444", color: "white"}}>
-                      Delete
+                    title="Delete">
+                      <Trash2 />
                     </button>
                   </td>
+
                 </>
               )}
             </tr>
           ))}
         </tbody>
       </table>
+      </div>
     );
 
 }

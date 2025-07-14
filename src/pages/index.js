@@ -5,6 +5,8 @@ import { supabase } from "@/lib/supabaseClient";
 import withAuth from "@/lib/withAuth";
 import { useEffect,useState } from "react";
 import ProductFilters from "@/components/productFilters";
+import styles from "@/styles/inventory.module.scss";
+import Modal from "@/components/modal";
 
 
 
@@ -14,6 +16,7 @@ function HomePage(){
   const[error, setError]= useState("");
   const [search, setSearch]=useState("");
   const[category, setCategory]=useState("");
+  const[showForm, setShowForm]=useState(false);
 
 
   const categories= Array.from(new Set(products.map(p=> p.category).filter(Boolean)));
@@ -63,24 +66,35 @@ function HomePage(){
 
 
   return (
-    <div>
-      <h1>
-        Inventory
-      </h1>
+    <div className={styles.inventoryContainer}>
+      <div className={styles.logoutButton}>
       <LogoutButton/>
-
-      <ProductForm 
-      onProductAdded= {handleProductAdded} 
-      />
+      </div>
+      <h1 className={styles.title}> Inventory Management </h1>
+      <div className={styles.subtitle}> Manage your product inventory efficiently </div>
+      
+      {showForm &&(
+        <Modal onClose={()=> setShowForm(false)}>
+          <ProductForm onProductAdded= {handleProductAdded} onClose={()=> setShowForm(false)} />
+        </Modal>
+      )}
 
       {loading &&<p>Loading...</p>}
       {error && <p style={{color:"red"}}>{error}</p>}
 
-      <ProductFilters
-      categories= {categories}
-      onSearch={setSearch}
-      onCategory= {setCategory}
-      />
+      <div className={styles.toolbarRow}>
+        <button className={styles.addButton}
+          onClick={()=> setShowForm((prev)=> !prev)}>
+            <span className={styles.plusIcon}>+</span> Add Product
+        </button>
+        <div className={styles.filtersRight}>
+          <ProductFilters
+            categories={categories}
+            onSearch={setSearch}
+            onCategory={setCategory}
+          />
+        </div>
+      </div>
 
       <ProductTable
       products= {filteredProducts}

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import styles from "@/styles/inventory.module.scss";
 
-export default function ProductForm({ onProductAdded }){
+export default function ProductForm({ onProductAdded, onClose}){
   const [form, setForm]=useState({
     name:"",
     stock:"",
@@ -20,59 +21,74 @@ export default function ProductForm({ onProductAdded }){
     e.preventDefault();
     setFormError("");
     setFormLoading(true);
-    if (!form.name || !form.stock || !form.category || !form.price){
-      setFormError("All fields are required.");
-      setFormLoading(false);
-      return;
-    }
+    try{
+      if (!form.name || !form.stock || !form.category || !form.price){
+        setFormError("All fields are required.");
+        setFormLoading(false);
+        return;
+      }
 
-    const {data,error}= await supabase
-      .from("products")
-      .insert([
-        {
-          name: form.name,
-          description: form.description,
-          stock: parseInt(form.stock, 10),
-          category: form.category,
-          price: parseFloat(form.price)
-        }
-      ])
-      .select();
-    if (error){
-      setFormError(error.message);
+      const {data,error}= await supabase
+        .from("products")
+        .insert([
+          {
+            name: form.name,
+            description: form.description,
+            stock: parseInt(form.stock, 10),
+            category: form.category,
+            price: parseFloat(form.price)
+          }
+        ])
+        .select();
+      if (error){
+        setFormError(error.message);
+      }
+      else{
+        setForm({name:"",description: "", stock:"", category:"", price:""});
+        onProductAdded(data[0]);
+        if (onClose) onClose();
+      }
+    } finally {
+      setFormLoading(false);
     }
-    else{
-      setForm({name:"",description: "", stock:"", category:"", price:""});
-      onProductAdded(data[0]);
-    }
-    setFormLoading(false);
   };
 
   return(
-    <form onSubmit={handleSubmit} style={{marginBottom: "2rem"}}>
-        <input
+    <form onSubmit={handleSubmit} className={styles.modalForm}>
+        <label>
+          Name
+          <input
           name="name"
           placeholder="Name"
           value={form.name}
           onChange={handleChange}
         />
+        </label>
 
-        <textarea
+        <label>
+          Description
+          <textarea
         name= "description"
         placeholder="Short Description"
         value={form.description}
         onChange={handleChange}
         />
+        </label>
 
-        <input
+        <label>
+          Stock
+          <input
           name="stock"
           type="number"
           placeholder="Stock"
           value={form.stock}
           onChange={handleChange}
         />
+        </label>
 
-        <select
+        <label>
+          Category
+          <select
         name="category"
         placeholder= "Select Category"
         value={form.category}
@@ -84,8 +100,11 @@ export default function ProductForm({ onProductAdded }){
           <option value="Wellness">Wellness</option>
           <option value="Home">Home</option>
         </select>
+        </label>
 
-        <input
+        <label>
+          Price
+          <input
           name="price"
           type="number"
           step="0.01"
@@ -93,8 +112,12 @@ export default function ProductForm({ onProductAdded }){
           value={form.price}
           onChange={handleChange}
         />
+        </label>
 
-        <button type="submit" disabled={formLoading}>
+        <button 
+        type="submit"
+        className={styles.addButton} 
+        disabled={formLoading}>
           {formLoading ? "Adding..." : "Add Product"}
         </button>
         {formError && <span style= {{color:"red", marginLeft:8}}>{formError}</span>}
