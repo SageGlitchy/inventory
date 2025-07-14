@@ -10,6 +10,9 @@ A modern, multi-user inventory management app built with **Next.js** and **Supab
 - Responsive, modern UI with SCSS modules
 - Modal forms, badges, and icon actions
 
+## Live Demo
+[https://inventory-xi-gilt.vercel.app/](https://inventory-xi-gilt.vercel.app/)
+
 ## Tech Stack
 - [Next.js](https://nextjs.org/)
 - [React](https://react.dev/)
