@@ -4,30 +4,30 @@ import { useRouter } from "next/router";
 import styles from "@/styles/login.module.scss";
 import Link from "next/link";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signUp({ email, password });
     setLoading(false);
     if (error) {
       setError(error.message);
     } else {
-      router.push("/");
+      router.push("/login");
     }
   };
 
   return (
     <div className={styles.loginContainer}>
-      <form className={styles.loginCard} onSubmit={handleLogin}>
-        <h2>Login to Inventory</h2>
+      <form className={styles.loginCard} onSubmit={handleSignup}>
+        <h2>Create an Account</h2>
         <input
           type="email"
           placeholder="Email"
@@ -44,15 +44,15 @@ export default function LoginPage() {
         />
         {error && <div className={styles.error}>{error}</div>}
         <button type="submit" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
+          {loading ? "Signing up..." : "Sign Up"}
         </button>
         <div style={{ textAlign: "center", marginTop: "0.5rem" }}>
-          Don&apos;t have an account?{" "}
-          <Link href="/signup" style={{ color: "#2256c5", textDecoration: "underline" }}>
-            Sign up
+          Already have an account?{" "}
+          <Link href="/login" style={{ color: "#2256c5", textDecoration: "underline" }}>
+            Log in
           </Link>
         </div>
       </form>
     </div>
   );
-}
+} 
