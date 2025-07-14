@@ -25,7 +25,7 @@ A modern, multi-user inventory management app built with **Next.js** and **Supab
 
 ### 1. Clone the repository
 ```bash
-git clone <repo-url>
+git clone (https://github.com/SageGlitchy/inventory)
 cd inventory
 ```
 
