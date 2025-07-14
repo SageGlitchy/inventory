@@ -28,6 +28,14 @@ export default function ProductForm({ onProductAdded, onClose}){
         return;
       }
 
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setFormError("User not authenticated.");
+        setFormLoading(false);
+        return;
+      }
+
       const {data,error}= await supabase
         .from("products")
         .insert([
@@ -36,7 +44,8 @@ export default function ProductForm({ onProductAdded, onClose}){
             description: form.description,
             stock: parseInt(form.stock, 10),
             category: form.category,
-            price: parseFloat(form.price)
+            price: parseFloat(form.price),
+            user_id: user.id
           }
         ])
         .select();
