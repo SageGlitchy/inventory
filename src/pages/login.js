@@ -18,41 +18,41 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
-      setError(error.message);
+        setError(error.message);
     } else {
       router.push("/");
     }
-  };
+};
 
-  return (
+return (
     <div className={styles.loginContainer}>
       <form className={styles.loginCard} onSubmit={handleLogin}>
         <h2>Login to Inventory</h2>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
+            <input
+            type="email"
+            placeholder="Email"
+            value={email}
           onChange={e => setEmail(e.target.value)}
-          required
+            required
         />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
+            <input
+            type="password"
+            placeholder="Password"
+            value={password}
           onChange={e => setPassword(e.target.value)}
-          required
+            required
         />
         {error && <div className={styles.error}>{error}</div>}
-        <button type="submit" disabled={loading}>
+            <button type="submit" disabled={loading}>
           {loading ? "Logging in..." : "Login"}
-        </button>
+            </button>
         <div style={{ textAlign: "center", marginTop: "0.5rem" }}>
           Don&apos;t have an account?{" "}
           <Link href="/signup" style={{ color: "#2256c5", textDecoration: "underline" }}>
             Sign up
           </Link>
         </div>
-      </form>
+        </form>
     </div>
   );
 }
